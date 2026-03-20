@@ -77,9 +77,21 @@ Solopreneurs, indie hackers, side-hustlers, freelancers, and first-time founders
 
 ---
 
+## Want the full toolkit?
+
+The free tool is just the start. The **$27 bundle** adds:
+
+- 📖 **15-page Niche Research Workbook** (PDF) — the manual behind the tool
+- 💡 **50 pre-validated niche ideas** with full signal scores
+- 🗂️ Demand research worksheets, competitor mapping tables, 7-day sprint plan
+
+👉 **[Get the bundle — $27](https://revenueclaw.github.io/niche-validator-pro/bundle.html)**
+
+---
+
 ## Support this project
 
-If this tool saved you time or helped you find a winning idea — buy me a coffee ☕
+If the free tool helped you — buy me a coffee ☕
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/revenueclaw)
 
