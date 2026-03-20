@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Niche Validator Pro</title>
+  <style>
+    :root {
+      --bg: #0f0f0f;
+      --card: #1a1a1a;
+      --border: #2a2a2a;
+      --accent: #6ee7b7;
+      --accent2: #818cf8;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --red: #f87171;
+      --yellow: #fbbf24;
+      --green: #6ee7b7;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 760px; margin: 0 auto; }
+    header { text-align: center; margin-bottom: 2.5rem; }
+    header h1 { font-size: 2rem; font-weight: 800; letter-spacing: -0.03em; }
+    header h1 span { color: var(--accent); }
+    header p { color: var(--muted); margin-top: 0.5rem; font-size: 1rem; }
+    .badge {
+      display: inline-block;
+      background: #1e293b;
+      color: var(--accent2);
+      border: 1px solid #334155;
+      border-radius: 999px;
+      padding: 0.25rem 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .card h2 { font-size: 1rem; font-weight: 700; margin-bottom: 1.25rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+    .form-group { margin-bottom: 1.25rem; }
+    label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text); }
+    input[type="text"], textarea, select {
+      width: 100%;
+      background: #0f0f0f;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      color: var(--text);
+      font-size: 0.95rem;
+      padding: 0.75rem 1rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="text"]:focus, textarea:focus, select:focus {
+      border-color: var(--accent);
+    }
+    textarea { resize: vertical; min-height: 80px; }
+    .slider-row { display: flex; align-items: center; gap: 1rem; }
+    input[type="range"] { flex: 1; accent-color: var(--accent); }
+    .slider-val { font-size: 0.875rem; font-weight: 700; color: var(--accent); min-width: 1.5rem; text-align: right; }
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 1rem;
+      background: var(--accent);
+      color: #0f0f0f;
+      font-size: 1rem;
+      font-weight: 800;
+      border: none;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      letter-spacing: 0.01em;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .results { display: none; }
+    .results.visible { display: block; }
+    .score-ring {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+    }
+    .score-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.25rem;
+      font-weight: 900;
+      border: 4px solid;
+      margin-bottom: 0.5rem;
+    }
+    .score-label { font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+    .score-low { color: var(--red); border-color: var(--red); }
+    .score-mid { color: var(--yellow); border-color: var(--yellow); }
+    .score-high { color: var(--green); border-color: var(--green); }
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    @media (max-width: 500px) { .metrics-grid { grid-template-columns: 1fr; } }
+    .metric {
+      background: #111;
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      padding: 1rem;
+    }
+    .metric-name { font-size: 0.75rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+    .metric-val { font-size: 1.25rem; font-weight: 800; }
+    .bar-wrap { height: 6px; background: #2a2a2a; border-radius: 999px; margin-top: 0.5rem; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 999px; transition: width 1s ease; }
+    .verdict {
+      border-left: 3px solid var(--accent);
+      padding: 1rem 1.25rem;
+      background: #111;
+      border-radius: 0 0.5rem 0.5rem 0;
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .product-ideas h3 { font-size: 0.875rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
+    .idea-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 0.9rem 1rem;
+      background: #111;
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      margin-bottom: 0.75rem;
+      gap: 1rem;
+    }
+    .idea-name { font-size: 0.9rem; font-weight: 600; flex: 1; }
+    .idea-price { font-size: 0.875rem; font-weight: 800; color: var(--accent); white-space: nowrap; }
+    .idea-type { font-size: 0.75rem; color: var(--muted); margin-top: 0.2rem; }
+    .reset-btn {
+      display: block;
+      width: 100%;
+      padding: 0.75rem;
+      background: transparent;
+      color: var(--muted);
+      font-size: 0.875rem;
+      font-weight: 600;
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      cursor: pointer;
+      margin-top: 1rem;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .reset-btn:hover { color: var(--text); border-color: var(--muted); }
+    footer { text-align: center; margin-top: 2rem; color: var(--muted); font-size: 0.8rem; }
+    footer a { color: var(--accent2); text-decoration: none; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="badge">Free Tool by RevenueClaw</div>
+    <h1>Niche <span>Validator</span> Pro</h1>
+    <p>Validate your business idea in 60 seconds. No fluff, just signal.</p>
+  </header>
+
+  <div id="form-section">
+    <div class="card">
+      <h2>Your Idea</h2>
+      <div class="form-group">
+        <label for="niche">What's your niche or idea?</label>
+        <input type="text" id="niche" placeholder="e.g. Notion templates for freelancers, AI productivity tools, pet care subscription box..." />
+      </div>
+      <div class="form-group">
+        <label for="audience">Target audience</label>
+        <input type="text" id="audience" placeholder="e.g. Freelancers, small business owners, parents..." />
+      </div>
+      <div class="form-group">
+        <label for="category">Category</label>
+        <select id="category">
+          <option value="digital">Digital Products / Templates</option>
+          <option value="saas">SaaS / Web Tools</option>
+          <option value="content">Content / Courses / Playbooks</option>
+          <option value="physical">Physical / E-commerce</option>
+          <option value="service">Service / Consulting</option>
+          <option value="community">Community / Membership</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Market Signals</h2>
+      <div class="form-group">
+        <label>How many direct competitors exist? <span style="color:var(--muted)">(1 = none, 10 = saturated)</span></label>
+        <div class="slider-row">
+          <input type="range" id="competition" min="1" max="10" value="5" oninput="document.getElementById('comp-val').textContent=this.value" />
+          <span class="slider-val" id="comp-val">5</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>How strong is demand / search interest? <span style="color:var(--muted)">(1 = none, 10 = high)</span></label>
+        <div class="slider-row">
+          <input type="range" id="demand" min="1" max="10" value="5" oninput="document.getElementById('demand-val').textContent=this.value" />
+          <span class="slider-val" id="demand-val">5</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>How well can you reach this audience? <span style="color:var(--muted)">(1 = no idea, 10 = have channels)</span></label>
+        <div class="slider-row">
+          <input type="range" id="reach" min="1" max="10" value="5" oninput="document.getElementById('reach-val').textContent=this.value" />
+          <span class="slider-val" id="reach-val">5</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Your expertise in this niche <span style="color:var(--muted)">(1 = none, 10 = expert)</span></label>
+        <div class="slider-row">
+          <input type="range" id="expertise" min="1" max="10" value="5" oninput="document.getElementById('exp-val').textContent=this.value" />
+          <span class="slider-val" id="exp-val">5</span>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn" onclick="validate()">⚡ Validate My Idea</button>
+  </div>
+
+  <div class="results card" id="results">
+    <h2>Validation Report</h2>
+    <div class="score-ring">
+      <div class="score-circle" id="score-circle">
+        <span id="score-num">0</span>
+      </div>
+      <div class="score-label" id="score-label">Viability Score</div>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric">
+        <div class="metric-name">Market Opportunity</div>
+        <div class="metric-val" id="m-market">—</div>
+        <div class="bar-wrap"><div class="bar-fill" id="b-market" style="width:0%;background:var(--accent)"></div></div>
+      </div>
+      <div class="metric">
+        <div class="metric-name">Competition Level</div>
+        <div class="metric-val" id="m-comp">—</div>
+        <div class="bar-wrap"><div class="bar-fill" id="b-comp" style="width:0%;background:var(--yellow)"></div></div>
+      </div>
+      <div class="metric">
+        <div class="metric-name">Audience Reach</div>
+        <div class="metric-val" id="m-reach">—</div>
+        <div class="bar-wrap"><div class="bar-fill" id="b-reach" style="width:0%;background:var(--accent2)"></div></div>
+      </div>
+      <div class="metric">
+        <div class="metric-name">Your Edge</div>
+        <div class="metric-val" id="m-edge">—</div>
+        <div class="bar-wrap"><div class="bar-fill" id="b-edge" style="width:0%;background:var(--green)"></div></div>
+      </div>
+    </div>
+
+    <div class="verdict" id="verdict"></div>
+
+    <div class="product-ideas">
+      <h3>💡 5 Product Ideas for This Niche</h3>
+      <div id="ideas-list"></div>
+    </div>
+
+    <button class="reset-btn" onclick="reset()">← Validate another idea</button>
+  </div>
+
+  <footer>
+    Built by <a href="https://gumroad.com/revenueclaw" target="_blank">RevenueClaw</a> · Free to use · Share it if it helped 🦀
+  </footer>
+</div>
+
+<script>
+  const PRODUCT_TEMPLATES = {
+    digital: [
+      { name: "Starter template bundle (5 templates)", type: "Notion / Airtable Template", price: "$27" },
+      { name: "Ultimate system template + video walkthrough", type: "Notion Template + Course", price: "$47" },
+      { name: "30-day challenge worksheet pack", type: "PDF / Digital Download", price: "$17" },
+      { name: "Swipe file & prompt library", type: "Digital Download", price: "$37" },
+      { name: "Mini-course: set up your system in a weekend", type: "Video Course", price: "$67" },
+    ],
+    saas: [
+      { name: "Micro SaaS MVP (one-feature tool)", type: "Web App", price: "$37/mo" },
+      { name: "Browser extension + lifetime deal launch", type: "Chrome Extension", price: "$47" },
+      { name: "API wrapper with simple UI", type: "Web Tool", price: "$27/mo" },
+      { name: "Open-source tool + paid Pro tier", type: "SaaS / Open Source", price: "$19/mo" },
+      { name: "No-code automation template pack", type: "Make / Zapier Templates", price: "$37" },
+    ],
+    content: [
+      { name: "Step-by-step playbook (PDF + checklist)", type: "PDF Playbook", price: "$27" },
+      { name: "Email mini-course (7 days)", type: "Email Course", price: "$37" },
+      { name: "Video workshop recording", type: "Video / Course", price: "$47" },
+      { name: "SOPs + scripts library", type: "Document Bundle", price: "$37" },
+      { name: "Expert interview compilation + notes", type: "Digital Product", price: "$17" },
+    ],
+    physical: [
+      { name: "Curated product starter kit", type: "Physical Bundle", price: "$47" },
+      { name: "Monthly subscription box (MVP)", type: "Subscription", price: "$29/mo" },
+      { name: "Print-on-demand journal / planner", type: "Physical / POD", price: "$24" },
+      { name: "Digital companion to physical product", type: "Hybrid", price: "$37" },
+      { name: "Wholesale product resale bundle", type: "Physical Products", price: "$47" },
+    ],
+    service: [
+      { name: "90-minute audit + written report", type: "Service Package", price: "$97" },
+      { name: "Done-for-you setup (productized service)", type: "Service", price: "$197" },
+      { name: "Async consulting retainer (monthly)", type: "Retainer", price: "$197/mo" },
+      { name: "Strategy session + action plan", type: "Consulting Call", price: "$147" },
+      { name: "Templates + 1 hour implementation call", type: "Hybrid", price: "$97" },
+    ],
+    community: [
+      { name: "Private community + weekly Q&A", type: "Membership", price: "$27/mo" },
+      { name: "Accountability group (cohort)", type: "Cohort Program", price: "$97" },
+      { name: "Resource library + community access", type: "Membership", price: "$19/mo" },
+      { name: "Mastermind group (limited seats)", type: "Mastermind", price: "$197/mo" },
+      { name: "Newsletter + paid tier for premium posts", type: "Newsletter", price: "$9/mo" },
+    ],
+  };
+
+  const VERDICTS = {
+    high: [
+      "Strong signal. This niche has real demand, manageable competition, and you have the reach to connect with buyers. Ship it.",
+      "Solid opportunity. The numbers say go. Your biggest risk is moving too slowly — get something out this week.",
+      "Green light. You've got demand, a path to buyers, and relevant expertise. Start with the simplest version and iterate.",
+    ],
+    mid: [
+      "Decent potential, but gaps exist. Focus on what's weak — if it's competition, niche down harder. If it's reach, build one channel first.",
+      "Moderate viability. This can work if you're strategic. Validate by preselling to 5 people before you build anything.",
+      "You're in the yellow zone. Not a no, but not a slam dunk. Run a cheap test: a landing page + waitlist before committing.",
+    ],
+    low: [
+      "Low signal right now. Either the demand isn't there, the competition is too thick, or you can't reach the audience. Consider pivoting.",
+      "This one needs work. The fundamentals aren't stacking up. Go back to the audience and ask: what do they actually pay for?",
+      "Proceed with caution. Score is low. Not impossible, but you'll be fighting uphill. Niche down or choose a different format.",
+    ],
+  };
+
+  function validate() {
+    const niche = document.getElementById('niche').value.trim();
+    const audience = document.getElementById('audience').value.trim();
+    const category = document.getElementById('category').value;
+    const competition = parseInt(document.getElementById('competition').value);
+    const demand = parseInt(document.getElementById('demand').value);
+    const reach = parseInt(document.getElementById('reach').value);
+    const expertise = parseInt(document.getElementById('expertise').value);
+
+    if (!niche) {
+      document.getElementById('niche').focus();
+      return;
+    }
+
+    // Score: demand + reach + expertise contribute positively; competition inversely
+    const compScore = (11 - competition); // invert: low competition = high score
+    const rawScore = (demand * 2.5) + (compScore * 2) + (reach * 2) + (expertise * 2);
+    const maxRaw = (10 * 2.5) + (10 * 2) + (10 * 2) + (10 * 2); // 85
+    const score = Math.round((rawScore / maxRaw) * 100);
+
+    // Metrics
+    const marketScore = Math.round(demand * 10);
+    const compDisplay = competition <= 3 ? "Low" : competition <= 6 ? "Medium" : "High";
+    const compPct = Math.round(competition * 10);
+    const reachPct = Math.round(reach * 10);
+    const edgePct = Math.round(expertise * 10);
+
+    // Score tier
+    let tier = score >= 65 ? 'high' : score >= 40 ? 'mid' : 'low';
+    const circle = document.getElementById('score-circle');
+    circle.className = 'score-circle ' + (tier === 'high' ? 'score-high' : tier === 'mid' ? 'score-mid' : 'score-low');
+    document.getElementById('score-num').textContent = score;
+    document.getElementById('score-label').textContent = tier === 'high' ? '🟢 Strong Opportunity' : tier === 'mid' ? '🟡 Moderate Potential' : '🔴 Needs Work';
+
+    // Metrics
+    document.getElementById('m-market').textContent = marketScore + '%';
+    document.getElementById('b-market').style.width = marketScore + '%';
+    document.getElementById('m-comp').textContent = compDisplay;
+    document.getElementById('b-comp').style.width = compPct + '%';
+    document.getElementById('m-reach').textContent = reachPct + '%';
+    document.getElementById('b-reach').style.width = reachPct + '%';
+    document.getElementById('m-edge').textContent = edgePct + '%';
+    document.getElementById('b-edge').style.width = edgePct + '%';
+
+    // Verdict
+    const verdictPool = VERDICTS[tier];
+    document.getElementById('verdict').textContent = verdictPool[Math.floor(Math.random() * verdictPool.length)];
+
+    // Product ideas
+    const ideas = PRODUCT_TEMPLATES[category] || PRODUCT_TEMPLATES.digital;
+    const ideasHtml = ideas.map(idea => `
+      <div class="idea-item">
+        <div>
+          <div class="idea-name">${idea.name}</div>
+          <div class="idea-type">${idea.type}</div>
+        </div>
+        <div class="idea-price">${idea.price}</div>
+      </div>
+    `).join('');
+    document.getElementById('ideas-list').innerHTML = ideasHtml;
+
+    // Show results
+    document.getElementById('form-section').style.display = 'none';
+    const results = document.getElementById('results');
+    results.classList.add('visible');
+    results.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function reset() {
+    document.getElementById('form-section').style.display = 'block';
+    const results = document.getElementById('results');
+    results.classList.remove('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
